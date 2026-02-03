@@ -14,6 +14,8 @@
     }
     public class EquipmentAvailabilityDto
     {
+        public int Id { get; set; }              
+        public int PickUpPointId { get; set; }  
         public string Address { get; set; } = null!;
         public int Quantity { get; set; }
     }

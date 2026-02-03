@@ -16,4 +16,18 @@
         public ICollection<Order> Orders { get; set; }
             = new List<Order>();
     }
+    public class PickUpPointEquipmentDto
+    {
+        public int PickUpPointId { get; set; }
+        public int EquipmentId { get; set; }
+        public int Quantity { get; set; }
+
+        public PickUpPointEquipment ToPickUpPointEquipment() {
+            return new PickUpPointEquipment {
+                PickUpPointId = PickUpPointId,
+                EquipmentId = EquipmentId,
+                Quantity = Quantity,
+            };
+        }
+    }
 }

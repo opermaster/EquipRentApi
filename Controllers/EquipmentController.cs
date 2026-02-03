@@ -51,7 +51,26 @@ namespace EquipRentApi.Controllers
 
             return Ok(equipment);
         }
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("address/{id}")]
+        public ActionResult DeletePointToEquipment(int id) {
+            
+            PickUpPointEquipment? pupe = _context.PickUpPointEquipments.FirstOrDefault(p=>p.Id == id);
 
+            if (pupe is null) return BadRequest("PickUpPointEquipment with this id does not exists!");
+
+            _context.PickUpPointEquipments.Remove(pupe);
+            _context.SaveChanges();
+            return NoContent();
+        }
+        [Authorize(Roles = "Admin")]
+        [HttpPost("address")]
+        public ActionResult AddPointToEquipment(PickUpPointEquipmentDto _dto) {
+            PickUpPointEquipment pupe = _dto.ToPickUpPointEquipment();
+            _context.PickUpPointEquipments.Add(pupe);
+            _context.SaveChanges();
+            return Created(nameof(AddPointToEquipment), new { id = pupe.Id, });
+        }
         [Authorize(Roles = "Admin")]
         [HttpGet]
         public ActionResult GetEquipments() {
@@ -65,6 +84,8 @@ namespace EquipRentApi.Controllers
                     Img = e.Img,
 
                     PickUpPoints = e.PickUpPoints.Select(p => new EquipmentAvailabilityDto {
+                        Id = p.Id,                         
+                        PickUpPointId = p.PickUpPointId,   
                         Address = p.PickUpPoint.Addres,
                         Quantity = p.Quantity
                     }).ToList()
