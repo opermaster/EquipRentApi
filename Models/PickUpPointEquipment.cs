@@ -30,4 +30,15 @@
             };
         }
     }
+    public class PickUpPointEquipmentRequestDto
+    {
+        public class Point {
+            public int Id { get; set; }
+            public int PickUpPointId { get; set; }
+            public int Quantity { get; set; }
+        }
+        public int Id { get; set; }
+        public decimal Price { get; set; }
+        public List<Point> Points { get; set; } = null!;
+    }
 }

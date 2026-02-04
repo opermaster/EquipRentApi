@@ -72,6 +72,55 @@ namespace EquipRentApi.Controllers
             return Created(nameof(AddPointToEquipment), new { id = pupe.Id, });
         }
         [Authorize(Roles = "Admin")]
+        [HttpPut("update_point_equipments")]
+        public ActionResult UpdatePointEquipment(PickUpPointEquipmentRequestDto dto) {
+            var existing = _context.PickUpPointEquipments
+                .Where(x => x.EquipmentId == dto.Id)
+                .ToList();
+
+            foreach (var pointDto in dto.Points) {
+                var entity = existing.FirstOrDefault(x => x.Id == pointDto.Id);
+
+                if (entity != null) {
+                    entity.PickUpPointId = pointDto.PickUpPointId;
+                    entity.Quantity = pointDto.Quantity;
+                }
+                else {
+                    var newEntity = new PickUpPointEquipment {
+                        EquipmentId = dto.Id,
+                        PickUpPointId = pointDto.PickUpPointId,
+                        Quantity = pointDto.Quantity
+                    };
+
+                    _context.PickUpPointEquipments.Add(newEntity);
+                }
+            }
+
+            var dtoIds = dto.Points.Select(p => p.Id).ToList();
+
+            var toDelete = existing
+                .Where(x => !dtoIds.Contains(x.Id))
+                .ToList();
+
+            _context.PickUpPointEquipments.RemoveRange(toDelete);
+
+            _context.SaveChanges();
+
+            return Ok();
+        }
+        [Authorize(Roles = "Admin")]
+        [HttpPut("update_price/{id}/{price}")]
+        public ActionResult UpdateEquipmentPrice(int id,decimal price) {
+            Equipment? eq = _context.Equipments.FirstOrDefault(e => e.Id == id);
+            if (eq is not null) {
+                eq.Price = price;
+            }
+            else return BadRequest("Equipment with this id does not exists!");
+            _context.SaveChanges();
+
+            return Ok();
+        }
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public ActionResult GetEquipments() {
             var res = _context.Equipments
