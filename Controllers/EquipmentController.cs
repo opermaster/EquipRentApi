@@ -120,8 +120,8 @@ namespace EquipRentApi.Controllers
 
             return Ok();
         }
+        [HttpGet("all")]
         [Authorize(Roles = "Admin")]
-        [HttpGet]
         public ActionResult GetEquipments() {
             var res = _context.Equipments
                 .Include(e => e.PickUpPoints)
@@ -140,9 +140,33 @@ namespace EquipRentApi.Controllers
                     }).ToList()
                 })
                 .ToList();
-
             return Ok(res);
         }
+        [HttpPost("avaliable")]
+        public ActionResult GetAvaliableEquipments(AvaliableEquipmentsRequestDto _dto) {
+            var res = _context.Equipments
+                .Include(e => e.PickUpPoints)
+                    .ThenInclude(p => p.PickUpPoint)
+                .Select(e => new EquipmentDto {
+                    Id = e.Id,
+                    Name = e.Name,
+                    Price = e.Price,
+                    Img = e.Img,
 
+                    PickUpPoints = e.PickUpPoints.Select(p => new EquipmentAvailabilityDto {
+                        Id = p.Id,
+                        PickUpPointId = p.PickUpPointId,
+                        Address = p.PickUpPoint.Addres,
+                        Quantity = p.Quantity - _context.Orders
+                                .Where(o =>
+                                    o.StartDate < _dto.EndDate &&
+                                    o.EndDate > _dto.StartDate
+                                )
+                                .Count(),
+                    }).ToList()
+                })
+                .ToList();
+            return Ok(res);
+        }
     }
 }

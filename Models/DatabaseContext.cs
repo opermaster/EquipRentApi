@@ -9,6 +9,7 @@ namespace EquipRentApi.Models
         public DbSet<PickUpPointEquipment> PickUpPointEquipments { get; set; } = null!;
         public DbSet<Order> Orders { get; set; } = null!;
         public DbSet<User> Users { get; set; } = null!;
+        public DbSet<Client> Client { get; set; } = null!;
 
 
         public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options) {

@@ -41,4 +41,13 @@
         public decimal Price { get; set; }
         public List<Point> Points { get; set; } = null!;
     }
+    public class AvaliableEquipmentsRequestDto {
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+    }
 }
+
+//if(o[i].StartDate < newOrder.EndDate &&
+//    o[i].EndDate > newOrder.StartDate) {
+//    over++;
+//}
