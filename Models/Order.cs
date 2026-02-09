@@ -30,4 +30,18 @@
             };
         }
     }
+    public class OrderResponseDto
+    {
+        public int Id { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public ClientDto Client { get; set; }
+        public EquipmentDto Equipment { get; set; }
+        public OrderStatus Status { get; set; }
+    }
+    public class OrderUpdateDto
+    {
+        public int Id { get; set; }
+        public OrderStatus Status { get; set; }
+    }
 }
