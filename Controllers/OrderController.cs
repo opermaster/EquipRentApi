@@ -16,7 +16,7 @@ namespace EquipRentApi.Controllers
         public OrderController(DatabaseContext context) {
             _context = context;
         }
-        [HttpPost]
+        [HttpPost("create")]
         public ActionResult CreateOrder(OrderDto dto) {
             using var transaction = _context.Database.BeginTransaction();
             dto.Client.Email = dto.Client.Email.Trim();
@@ -57,7 +57,7 @@ namespace EquipRentApi.Controllers
         }
 
         [Authorize(Roles = "Admin,Manager")]
-        [HttpGet]
+        [HttpGet("inner")]
         public ActionResult<IEnumerable<OrderResponseDto>> GetOrders() {
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 

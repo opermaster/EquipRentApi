@@ -50,7 +50,7 @@ namespace EquipRentApi.Controllers
             return NoContent();
         }
         [Authorize(Roles = "Admin")]
-        [HttpGet]
+        [HttpGet("points")]
         public ActionResult GetPoints() {
             var points = _context.PickUpPoints.Select(p => new PickUpPointDto {
                 Id = p.Id,

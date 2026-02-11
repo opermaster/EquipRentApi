@@ -32,7 +32,7 @@ namespace EquipRentApi.Controllers
             return Created(nameof(RegisterUser), new { id = user.Id, });
         }
         [Authorize(Roles = "Admin")]
-        [HttpDelete("{id}")]
+        [HttpDelete("/by-id{id}")]
         public ActionResult DeleteUser(int id) {
             User? _user = _context.Users.FirstOrDefault(u => u.Id == id);
             if (_user is null) return Conflict("User with this id does not exists");

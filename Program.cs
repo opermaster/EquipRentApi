@@ -11,6 +11,9 @@ namespace EquipRentApi
     {
         public static void Main(string[] args) {
             var builder = WebApplication.CreateBuilder(args);
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
+
             builder.Services.AddControllers().AddJsonOptions(options => {
                 options.JsonSerializerOptions.Converters.Add(
                     new JsonStringEnumConverter()
@@ -64,7 +67,10 @@ namespace EquipRentApi
                 };
             });
             var app = builder.Build();
-
+            if (app.Environment.IsDevelopment()) {
+                app.UseSwagger();
+                app.UseSwaggerUI();
+            }
             app.UseRouting();
             app.UseCors("AllowFrontend");
             app.UseAuthentication();

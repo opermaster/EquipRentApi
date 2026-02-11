@@ -14,7 +14,7 @@ namespace EquipRentApi.Controllers
             _context = context;
         }
         [Authorize(Roles = "Admin")]
-        [HttpPost]
+        [HttpPost("new")]
         public async Task<IActionResult> CreateEquipment([FromForm] EquipmentCreateDto dto) {
             if (dto.Image == null || dto.Image.Length == 0)
                 return BadRequest("Image required");
@@ -120,8 +120,8 @@ namespace EquipRentApi.Controllers
 
             return Ok();
         }
-        [HttpGet("all")]
         [Authorize(Roles = "Admin")]
+        [HttpGet("all")]
         public ActionResult GetEquipments() {
             var res = _context.Equipments
                 .Include(e => e.PickUpPoints)
