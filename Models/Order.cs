@@ -25,7 +25,6 @@
             return new Order {
                 StartDate = StartDate,
                 EndDate = EndDate,
-                Client = Client.ToClient(),
                 PickUpPointEquipmentId = PickUpPointEquipmentId
             };
         }
@@ -38,10 +37,15 @@
         public ClientDto Client { get; set; }
         public EquipmentDto Equipment { get; set; }
         public OrderStatus Status { get; set; }
+        public string Address { get; set; } 
     }
     public class OrderUpdateDto
     {
         public int Id { get; set; }
         public OrderStatus Status { get; set; }
+    }
+    public class OrderCancelDto {
+        public int Id { get; set; }
+        public ClientDto Client {get;set;}
     }
 }

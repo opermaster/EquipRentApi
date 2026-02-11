@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic.FileIO;
 using System.IO.Pipelines;
 using System.Security.Claims;
 
@@ -18,11 +19,13 @@ namespace EquipRentApi.Controllers
         [HttpPost]
         public ActionResult CreateOrder(OrderDto dto) {
             using var transaction = _context.Database.BeginTransaction();
-
+            dto.Client.Email = dto.Client.Email.Trim();
             try {
+
                 var client = _context.Client.FirstOrDefault(c => c.Email == dto.Client.Email);
 
-                if (client == null) {
+                if (client is null) {
+                    Console.WriteLine("CLIENT DOES NOT EXIST!!!!!    --------------------------");
                     client = new Client {
                         FirstName = dto.Client.FirstName,
                         LastName = dto.Client.LastName,
@@ -48,6 +51,7 @@ namespace EquipRentApi.Controllers
             }
             catch {
                 transaction.Rollback();
+                return BadRequest();
                 throw;
             }
         }
@@ -86,10 +90,51 @@ namespace EquipRentApi.Controllers
                         Name = o.PickUpPointEquipment.Equipment.Name,
                         Price = o.PickUpPointEquipment.Equipment.Price,
                         Img = o.PickUpPointEquipment.Equipment.Img
-                    }
+                    },
+                    
                 });
 
             return Ok(orders);
+        }
+
+        [HttpPut("personal")]
+        public ActionResult<IEnumerable<OrderResponseDto>> GetOrdersPersonal(ClientDto _dto) {
+            Client? client = _context.Client.FirstOrDefault(c => c.Email == _dto.Email);
+            if (client is null) return BadRequest("Client with this email does`not exists!");
+            var orders = _context.Orders.Where(o => o.ClientId == client.Id)
+                .Select(o => new OrderResponseDto {
+                    Id = o.Id,
+                    StartDate = o.StartDate,
+                    EndDate = o.EndDate,
+                    Status = o.Status,
+
+                    Client = new ClientDto {
+                        FirstName = o.Client.FirstName,
+                        LastName = o.Client.LastName,
+                        Email = o.Client.Email
+                    },
+
+                    Equipment = new EquipmentDto {
+                        Id = o.PickUpPointEquipment.Equipment.Id,
+                        Name = o.PickUpPointEquipment.Equipment.Name,
+                        Price = o.PickUpPointEquipment.Equipment.Price,
+                        Img = o.PickUpPointEquipment.Equipment.Img
+                    },
+                    Address = o.PickUpPointEquipment.PickUpPoint.Addres
+                });
+
+            return Ok(orders);
+        }
+        [HttpPut("cancel")]
+        public ActionResult CandelOrder(OrderCancelDto _dto) {
+            Client? client = _context.Client.FirstOrDefault(c => c.Email == _dto.Client.Email);
+            if (client is null) return BadRequest("Client with this email does`not exists!");
+            Order? order = _context.Orders.FirstOrDefault(o => o.Id== _dto.Id);
+            if (order is null) return BadRequest("Order with this Id does`not exists!");
+
+            order.Status = OrderStatus.Rejected;
+            _context.SaveChanges();
+            return NoContent();
         }
         [Authorize(Roles = "Admin,Manager")]
         [HttpPut]
